@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="referrer" content="origin">
+        <title>{% block title %}Bloggy Channel{% endblock %}</title>
+        
+        <meta name="description" content="{% block description %}Personal Blog-Based Channel{% endblock %}">
+        <meta name="keywords" content="{% block keywords %}Personal Blog{% endblock %}">
+        {{config.Europix_EXTEND_META | safe}}
+
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
+        <link rel="shortcut icon" href="{{url_for('main.static',filename='img/favicon.ico')}}" type="image/x-icon"/>
+        {% block css %}
+        <!-- Bootstrap and font-awesome CSS -->
+        <link href="https://s3.pstatp.com/cdn/expire-1-M/twitter-bootstrap/4.6.0/css/bootstrap.css" rel="stylesheet">
+        <link href="https://s2.pstatp.com/cdn/expire-1-M/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+        <script type="text/css" src="{{url_for('main.static',filename='js/headroom.min.js')}}"></script>
+        <!-- blog CSS -->
+        <link type="text/css" href="{{url_for('main.static',filename='css/blog.css')}}" rel="stylesheet">
+        {% endblock %}
+    </head>
+    <body>
+        {% include 'tend/common/header.html' %}
+        <main>
+        {% block main %}
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8">
+                    {% block content %}{% endblock %}
+                    </div>
+                    <div class="col-lg-4">
+                    {% include 'tend/common/sidebar.html' %}
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+        </main>
+        {% block js %}
+            <script src="https://s3.pstatp.com/cdn/expire-1-M/jquery/3.3.1/jquery.min.js"></script>
+            <script src="https://s3.pstatp.com/cdn/expire-1-M/popper.js/2.7.0/umd/popper.js"></script>
+            <script src="https://s1.pstatp.com/cdn/expire-1-M/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+            <script>
+                $(function(){var myElement=document.querySelector(".blog-navbar");var headroom=new Headroom(myElement);headroom.init()});
+            </script>
+            
+            <script type="text/javascript" src="{{url_for('main.static',filename='js/js.cookie.min.js')}}"></script>
+            <script type="text/javascript" src="{{url_for('main.static',filename='js/blog.js')}}"></script>
+        {% endblock %}
+    </body>
+</html>

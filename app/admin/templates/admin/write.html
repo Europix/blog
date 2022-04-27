@@ -1,0 +1,281 @@
+{% extends 'admin/common/base.html' %}
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('.static',filename='editor_md/editormd.min.css')}}">
+<link rel="stylesheet" href="{{url_for('.static',filename='css/write.css')}}">
+<link rel="stylesheet" href="{{url_for('.static',filename='lib/jquery_datepicker/css/foundation-datepicker.css')}}">
+<link rel="stylesheet" href="{{url_for('.static',filename='css/tagsinput.css')}}">
+<link rel="stylesheet" href="{{url_for('.static',filename='css/typeaheadjs.css')}}">
+<style>
+    .editormd-fullscreen{
+        z-index: 99;
+    }
+</style>
+{% endblock %}
+{% block js %}
+{{ super() }}
+<script src="{{url_for('.static',filename='editor_md/editormd.min.js')}}"></script>
+<script src="{{url_for('.static',filename='lib/jquery_datepicker/js/foundation-datepicker.js')}}"></script>
+<script src="{{url_for('.static',filename='lib/jquery_datepicker/js/foundation-datepicker.zh-CN.js')}}"></script>
+<script src="{{url_for('.static',filename='js/tagsinput.js')}}"></script>
+<script src="{{url_for('.static',filename='lib/typeahead/typeahead.bundle.min.js')}}"></script>
+<script>
+
+    var imagehosting_for = "thumbnail-img";
+    function imagehosting(flag) {
+        imagehosting_for = flag;
+        layer.open({
+            type: 2,
+            title: 'Image Hosting',
+            shade: 0.8,
+            maxmin: true,
+            shadeClose: true,
+            area: ['80%', '90%'],
+            content: '{{url_for("admin.image_hosting")}}'
+        });
+    }
+
+    function imagehosting_callback(obj) {
+        if(imagehosting_for === 'thumbnail-img') {
+            $('#thumbnail-img').attr('src', obj.img_url);
+            $('#thumbnail').val(obj.img_url);
+        }
+        if(imagehosting_for === 'editor-img') {
+            console.log(myEditor)
+            myEditor.settings.imagehosting_callback(obj)
+        }
+
+    }
+
+    var myEditor;
+    $(function () {
+        myEditor = editormd("write-editor", {
+            height: '450px',
+            syncScrolling: "single",
+            path: "{{url_for('.static',filename='editor_md/lib/')}}",
+            watch: true,
+            taskList: true,
+            tocm: true,
+            tex: true,
+            imageUpload: true,
+            toolbarIcons: function () {
+                return ["bold", "del", "italic", "quote", "|", "h2", "h3", "h4",
+                    "|", "list-ul", "list-ol", "hr", "|", "link", "reference-link", "image",
+                    "code", "code-block", "table", "|", "import_url","watch", "fullscreen"]
+            },
+            toolbarIconTexts: {
+                import_url: 'import'
+            },
+            toolbarHandlers:{
+                import_url: function(cm, icon, cursor, selection) {
+                    if(selection === "") {
+                        cm.setCursor(cursor.line, cursor.ch + 1);
+                    }
+
+
+                    console.log(this)
+
+                    let dialogName = 'import_url_name', dialog;
+                    let editor = $('#write-editor')
+                    if (editor.find("." + dialogName).length < 1){
+                        var dialogContent ='<div class="editormd-form">';
+                            dialogContent += '<label>Address:</label>'
+                            dialogContent += '<input type="text" name="url" placeholder="">'
+                            dialogContent += '<br/>'
+                            dialogContent += '<label>Content:</label>'
+                            dialogContent += '<input type="text" name="html" placeholder="">'
+                            dialogContent += '<br/>'
+                            dialogContent += '<label>Import Image</label>'
+                            dialogContent += '<a href="javascript:;"><label for="editormd-import-dialog-radio" title="是">'
+                            dialogContent += '<input type="radio" name="download" id="yes" value="1">是&nbsp;'
+                            dialogContent += '</label></a>'
+                            dialogContent += '<a href="javascript:;"><label for="editormd-import-dialog-radio" title="否">'
+                            dialogContent += '<input type="radio" name="download" id="no" value="0" checked="checked">否&nbsp;'
+                            dialogContent += '</label></a>'
+                            dialogContent += '</div>';
+
+                        dialog = this.createDialog({
+                            title      : 'import',
+                            width      : (this.settings.imageUpload) ? 465 : 380,
+                            height     : 254,
+                            name       : dialogName,
+                            content    : dialogContent,
+                            mask       : this.settings.dialogShowMask,
+                            drag       : this.settings.dialogDraggable,
+                            lockScreen : this.settings.dialogLockScreen,
+                            maskStyle  : {
+                                opacity         : this.settings.dialogMaskOpacity,
+                                backgroundColor : this.settings.dialogMaskBgColor
+                            },
+                            buttons : {
+                                enter : [this.lang.buttons.enter, function() {
+                                    var url  = this.find("[name='url']").val();
+                                    var html = this.find("[name='html']").val();
+                                    var download = this.find("[name=\"download\"]:checked").val();
+                                    console.log(url,download)
+
+                                    if (url === "" && html.length == 0)
+                                    {
+                                        alert('Invalid URL');
+                                        return false;
+                                    }
+                                    let that = this;
+                                    $.post('{{url_for("admin.import_article")}}', {url: url, html: html, 'csrf_token':'{{ csrf_token() }}', download_img: download}, (resp)=>{
+                                        cm.setValue(resp)
+                                        that.find("[name='url']").val('');
+                                        this.hide().lockScreen(false).hideMask();
+                                    })
+                                    return false;
+                                }],
+                                cancel : [this.lang.buttons.cancel, function() {
+                                    this.hide().lockScreen(false).hideMask();
+                                    return false;
+                                }]
+                            }
+                        });
+                    }
+                    
+                    dialog = editor.find("." + dialogName);
+                    dialog.find("[type=\"text\"]").val("");
+
+                    this.dialogShowMask(dialog);
+                    this.dialogLockScreen();
+                    dialog.show();
+                },
+            },
+
+            lang : {
+                toolbar : {
+                    import_url:'import',
+                }
+            },
+            imagehosting: function () {
+                imagehosting('editor-img');
+            },
+            imagehosting_callback:function(obj) {
+                
+            }
+        });
+
+        function save(state) {
+            // $('#tags').val($('#tags').val());
+            $.ajax({
+                url: '{{url_for("admin.write")}}',
+                type: "post",
+                data: $("form").serialize(),
+                dataType: 'json',
+                success: function (res) {
+                    if (res.code == 1) {
+                        if (res.id) {
+                            $('#id').val(res.id);
+                        }
+                        toastr.success(res.msg);
+                    } else {
+                        toastr.error(res.msg);
+                    }
+                },
+                fail: function (res) {
+                    toastr.error('Network Error');
+                }
+            })
+        }
+        $('#form').on('submit', function (ev) {
+            ev.preventDefault();
+            save(1);
+        });
+        $('#draft').click(function (e) {
+            $('#state').val(0);
+            $('#form').submit();
+        });
+        $('#publish').click(function (e) {
+            $('#state').val(1);
+            $('#form').submit();
+        });
+        $('#thumbnail-upload-btn').click(function (e) {
+            imagehosting('thumbnail-img');
+        });
+
+        $('#baseURL').html(window.location.protocol + "//" + window.location.host + '/');
+
+        $('#timestamp').fdatepicker({
+			format: 'yyyy-mm-dd hh:ii:ss',
+			pickTime: true
+        });
+
+        $('#tags').tagsinput({
+            typeahead: {
+                source: ['Amsterdam', 'Washington', 'Sydney', 'Beijing', 'Cairo']
+            }
+        });
+    })
+</script>
+{% endblock %}
+{% block content %}
+<div class="content-wrapper" style="min-height: 600px;">
+    <section class="content-header">
+        <h3>Article Post</h3>
+    </section>
+    <section class="content">
+        <form id="form" method="POST">
+            {{ form.hidden_tag() }}
+            <div class="row">
+                <div class="col-lg-9 col-md-9">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Title</span>
+                        </div>
+                        {{form.title(class='form-control')}}
+                    </div>
+                    <div class="write-article">
+                        <div id="write-editor">
+                            {{form.content(id='hidden-body',class='hidden')}}
+                        </div>
+                    </div>
+                    <div class="accordion" id="accordionExample">
+                        <div class="card">
+                            <div class="card-header" id="headingOne" style="padding:0px;">
+                              <h2 class="mb-0">
+                                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                  Article Summary
+                                </button>
+                              </h2>
+                            </div>
+                        
+                            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                              <div class="card-body">
+                                {{form.summary(id='summary',class='form-control')}}
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <div id="saveBtns" class="card">
+                        <div class="card-body">
+                            <button id='publish' type="button" class="btn btn-success btn-sm">POST</button>
+                        </div>
+                    </div>
+                    <div id="category" class="card mt-3">
+                        <h6 class="card-title p-2 border-bottom">Category</h6>
+                        <div class="card-body">
+                            {{form.category_id(id='category_id',class='form-control')}}
+                        </div>
+                    </div>
+                    <div id="tags_div" class="card mt-3">
+                        <h6 class="card-title p-2 border-bottom">Tags</h6>
+                        <div class="card-body">
+                            {{form.tags(class='form-control')}}
+                        </div>
+                    </div>
+                    <div id="publish-time" class="card mt-3">
+                        <h6 class="card-title p-2 border-bottom">Post Time</h6>
+                        <div class="card-body">
+                            {{form.timestamp(type='datetime',class='form-control')}}
+                        </div>
+                    </div><!--publish time end-->
+                </div>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}

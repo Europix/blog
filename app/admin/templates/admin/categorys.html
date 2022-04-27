@@ -1,0 +1,35 @@
+{% extends 'admin/common/base.html' %}
+{% import "admin/macros/_patination.html" as page_macros %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div>
+        <h3>Categorys</h3>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Sort</th>
+                <th scope="col">Show?</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in categorys.items %}
+              <tr>
+                <th scope="row">{{c.id}}</th>
+                <td>{{ c.title }}</td>
+                <td>{{c.name}}</td>
+                <td>{{c.sn}}</td>
+                <td>{{'Show' if c.visible else 'Invisible'}}</td>
+                    
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+    </div>
+    {{ page_macros.pagination_widget(categorys, 'admin.categorys') }}
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'tend/common/base.html' %}
+{% import "tend/macros/_patination.html" as page_macros %}
+{% block title %} Search Result {% endblock %}
+{% block keywords %}  {% endblock %}
+{% block description %} Search {% endblock %}
+{% block content %}
+    <nav aria-label="breadcrumb">
+    <ol class="breadcrumb bg-white border-0 rounded-0 mb-2 py-2 f-15">
+        <li class="breadcrumb-item">
+            <i class="fa fa-home mr-1"></i><a href="/">Home</a>
+        </li>
+        <li class="breadcrumb-item">Search</li>
+    </ol>
+</nav>
+<div class="summary-list">
+    {% for a in articles.items %}
+    <div class="media mb-1 mb-sm-2 p-2 p-lg-3">
+        <div class="media-body">
+            <div class="text-muted mb-2 f-12">
+                <img class="avatar" src="{{url_for('.static',filename='img/avatar.jpg')}}" alt="Europix">
+                <span>Europix</span>
+                <span>Posted {{a.timestamp|pretty_date}}</span>
+                <br>
+                <span> Read: {{ a.vc }}</span>
+            </div>
+            <h2 class="mt-0 font-weight-bold text-info f-17">
+                <a href="{{url_for('main.article',name=a.name)}}" target="_blank">{{a.title}}</a>
+            </h2>
+            <p class="d-none d-sm-block mb-2 f-15">{{a.summary|truncate(120,killwords=True,leeway=0) }}
+            </p>
+            <p class="d-block d-sm-none mb-2 f-15">{{a.summary|truncate(64,killwords=True,leeway=0) }}
+            </p>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+<div>
+    {{ page_macros.pagination_widget(articles, '.search_results',query=query) }}
+</div>
+
+{% endblock %}

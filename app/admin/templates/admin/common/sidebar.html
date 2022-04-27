@@ -1,0 +1,35 @@
+<nav id="sidebar" class="col-lg-2 d-md-block sidebar">
+    <div class="sidebar-sticky">
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link font-weight-bold active" href="{{url_for('admin.index')}}">
+            Interface
+          </a>
+        </li>
+      </ul>
+      <ul class="nav flex-column ml-1">
+        <li class="nav-item">
+          <a class="nav-link font-weight-14" href="{{ url_for('admin.write') }}">
+              <b>Write Article</b>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link font-weight-15" href="{{url_for('admin.articles')}}">
+              <b>Article List</b>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link font-weight-16" href="{{url_for('admin.categorys')}}">
+              <b>Category List</b>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link font-weight-17" href="{{url_for('admin.tags')}}">
+              <b>Tag Management</b>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link font-weight-18" href="{{url_for('admin.users')}}">
+              <b>User Settings</b>
+          </a>
+  </nav>

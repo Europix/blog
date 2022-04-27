@@ -1,0 +1,51 @@
+{% extends 'admin/common/base.html' %}
+{% import "admin/macros/_patination.html" as page_macros %}
+{% block content %}
+<div class="admin-content">
+    <div class="row">
+        <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Title</th>
+                <th scope="col">Category</th>
+                <th scope="col">Status</th>
+                <th scope="col">Time</th>
+                <th scope="col">Author</th>
+                <th scope="col" width="22.5%">Settings</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for article in articles.items %}
+              <tr>
+                <th scope="row">{{article.id}}</th>
+                <td>{{ article.title|title }}</td>
+                <td>{{ article.category.title}}</td>
+                <td>{{'Posted'}}</td>
+                <td>{{ article.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                <td>{{ article.author.username }}</td>
+                <td>
+                    <a href="{{url_for('admin.article_edit',id=article.id)}}"
+                    class="btn btn-outline-primary btn-sm font-weight-bold">Edit</a>
+                    <a href="{{url_for('main.article',name=article.name)}}" target="_blank" class="btn btn-outline-info btn-sm">Preview</a>
+                    <a href="javascript:delete_article_{{ article.id }}()" class="btn btn-outline-secondary btn-sm">Delete</a>
+                    <form method="post" role="form" id="delete_article_{{ article.id }}">
+                            {{ deleteForm.hidden_tag() }}
+                            {{ deleteForm.article_id(hidden="",class="hidden", value=article.id) }}
+                        </form>
+                        <script type="text/javascript">
+                           function delete_article_{{ article.id }}(){
+                               if(confirm('Confirm To Delete?')){
+                                $("#delete_article_{{ article.id }}").submit() ;
+                               }
+                           }
+                        </script>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+    </div>
+    {{ page_macros.pagination_widget(articles, request.endpoint,title = title) }}
+</div>
+{% endblock %}

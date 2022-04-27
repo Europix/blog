@@ -1,0 +1,43 @@
+{% extends 'admin/common/base.html' %}
+{% import "admin/macros/_patination.html" as page_macros %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div>
+        <h3>Tag List</h3>
+          <div class="form-row align-items-center">
+            <div class="col-auto">
+              <a href="{{url_for('admin.tag_add')}}" class="title">Add a new tag?</a>
+            </div>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Tag</th>
+                <th scope="col">Id</th>
+                <th scope="col">Show?</th>
+                <th scope="col">Number of Articles</th>
+                <th scope="col">Edit</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for t in tags.items %}
+              <tr>
+                <th scope="row">{{t.id}}</th>
+                <td>{{t.name}}</td>
+                <td>{{t.code}}</td>
+                <td>{{'Show' if t.visible else 'Invisible'}}</td>
+                <td>{{t.articles.count()}}</td>
+                <td>
+                  <a href="{{url_for('admin.tag_edit',id=t.id)}}"
+                  class="btn btn-outline-primary btn-sm">Edit</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+    </div>
+    {{ page_macros.pagination_widget(tags, 'admin.tags') }}
+</div>
+{% endblock %}

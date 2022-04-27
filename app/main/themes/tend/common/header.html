@@ -1,0 +1,64 @@
+<nav class="navbar navbar-expand-md bg-grey fixed-top blog-navbar py-md-0">
+    <a class="navbar-brand d-md-none d-lg-block" id="site-logo-name" href="/">
+        <h1 style="display: none;">Bloggy Channel</h1>
+        <strong class="px-2">Bloggy Channel</strong>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="card-header px-2">
+        <strong>Switch Theme</strong>
+        <img class="float-right px-2 float-md-none" id="theme-img"
+             src="{{ url_for('main.static',filename='img/toggle-dark.png') if request.cookies.get('toggleTheme') == 'dark' else url_for('main.static',filename='img/toggle-light.png') }}"
+             alt="theme-toggle" title="Switch" data-darkico="{{url_for('main.static', filename='img/toggle-dark.png')}}" data-lightico="{{url_for('main.static', filename='img/toggle-light.png')}}"
+             data-darkcss="{{url_for('main.static', filename='css/night.css')}}">
+    </div>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item mr-2">
+                <a class="nav-link py-md-3" href="{{url_for('admin.index')}}"> <b>Admin Index</b><span
+                        class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item mr-2">
+                <a class="nav-link py-md-3 {{'active' if request.path == url_for('main.index') else ''}}"
+                    href="{{url_for('main.index')}}"><i class="fa fa-home mr-1"></i>Main Index<span
+                        class="sr-only">(current)</span></a>
+            </li>
+            <form class="nav-item navbar-form mr-2 py-md-2" role="search" method="POST" id="searchform"
+                action="{{url_for('main.search')}}">
+                {{ g.search_form.hidden_tag() }}
+                <div class="input-group">
+                    {{g.search_form.search(type='search',class='form-control rounded-0',placeholder='Search',maxlength=64,value=query)}}
+                    <div class="input-group-btn">
+                        <button class="btn btn-info rounded-0" type="submit"><i class="fa fa-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </ul>
+        <ul class="navbar-nav">
+            {% if current_user.is_authenticated %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false" title="{{current_user.username}},welcome back!">
+
+                    <img class="avatar" src="{{url_for('.static',filename='img/avatar.jpg')}}" alt="{{current_user.username}}">
+                </a>
+                <div class="dropdown-menu dropdown-menu-right mt-0 rounded-0 border-0" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item pl-3" href="/profile/">
+                        <i class="fa fa-fw fa-user text-info mr-2"></i>Profile</a>
+                    <a class="dropdown-item pl-3" href="{{url_for('.logout')}}">
+                        <i class="fa fa-fw fa-sign-out text-info mr-2"></i>Quit</a>
+                </div>
+            </li>
+            {% else %}
+            <li class="nav-item mr-2">
+                <a class="nav-link py-md-3" href="{{url_for('main.login')}}">Login</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+<div class="text-center" id="to-top">
+    <i class="fa fa-chevron-up" id="btn-top" title="Back to Top"></i>
+</div>

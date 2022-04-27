@@ -1,0 +1,54 @@
+{% extends 'tend/common/base.html' %}
+{% import "tend/macros/_flash.html" as flash_macros %}
+{% block title %}Login{% endblock %}
+{% block css %}
+{{super()}}
+<link href="{{url_for('main.static',filename='css/account.css')}}" rel="stylesheet">
+{% endblock%}
+{% block main %}
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-sm-8 col-md-6 offset-sm-2 offset-md-3 px-xl-5">
+            <div class="card rounded-0 px-3 px-lg-4">
+                <div class="card-header text-center bg-white py-2"><h3 class="my-1 text-info">Profile</h3></div>
+                <div class="card-body">
+                    {{flash_macros.flash_msg()}}
+                    <ul class="list-group">
+                        <li class="list-group-item text-center border-0" id="profile-avatar">
+                            
+                        <img class="avatar" src="{{url_for('.static',filename='img/avatar.jpg')}}" alt="hcq">
+
+                        </li>
+                        <li class="list-group-item ml-6 border-0">
+                            <span class="font-weight-bold">Username:</span>
+                            <span>{{current_user.username}}</span>
+                        </li>
+                        
+                        
+                        <li class="list-group-item ml-6 border-0" title="Email verification ">
+                            <span class="font-weight-bold">Email：</span>
+                            <span>{{current_user.email}}</span>
+                        </li>
+
+                        <li class="list-group-item ml-6 border-0" title="Status">
+                            <span class="font-weight-bold">User = </span>
+                            <span>{{current_user.role_name}}</span>
+                        </li>
+
+                        
+                        
+                    </ul>
+                </div>
+                <div class="text-center mb-5" id="social-login">
+                    <div class="login-title"><span>Change Info</span></div>
+                    <div class="more-link mt-3">
+                        <a class="btn btn-info btn-sm rounded-0 mx-lg-3 mx-sm-2" href="/edit_profile">Change Profile</a>
+                        <a class="btn btn-info btn-sm rounded-0 mx-lg-3 mx-sm-2" href="/password">Change password</a>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

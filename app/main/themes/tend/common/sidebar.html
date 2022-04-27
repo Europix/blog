@@ -1,0 +1,41 @@
+<div class="card border-0 rounded-0 px-3 mb-2 mb-md-3" id="tag-card">
+    <div class="card-header bg-white px-0">
+        <strong><i class="fa fa-tags mr-2 f-17"></i>
+            <a  data-toggle="collapse" href="#collapse_tags" role="button" aria-expanded="true" aria-controls="collapse_tags">
+            Tags
+            </a>
+        </strong>
+    </div>
+    <div class="collapse show" id="collapse_tags">
+        <div class="card-body px-0 py-3">
+            <div class="tag-cloud"> 
+            {% for t in get_tags() %}
+            <a href="/tag/{{t.code}}/" class="tags f-16" id="tag-{{t.id}}"
+                title="{{t.name}}">{{t.name}}</a>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 rounded-0 px-3 mb-2 mb-md-3" id="new_articles-card">
+    <div class="card-header bg-white px-0">
+        <strong><i class="fa fa-book mr-2 f-17"></i>
+            <a  data-toggle="collapse" href="#new_articles" role="button" aria-expanded="true" aria-controls="new_articles">
+            Newest
+            </a>
+        </strong>
+    </div>
+    <div class="collapse show" id="new_articles">
+        <ul class="list-group list-group-flush f-16">
+            {% for a in get_articles(is_page=True).items %}
+            <li class="list-group-item d-flex justify-content-between align-items-center pr-2 py-2">
+                <a class="category-item" href="{{url_for('main.article',name=a.name)}}"
+                title="{{a.title}}">{{a.title | truncate(28,killwords=True,leeway=0) }}</a>
+                <span class="badge text-center"></span>
+            </li>
+            {% endfor %}
+            
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,92 @@
+{% extends 'admin/common/base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <a href="#" data-toggle="modal" data-target="#user-add" title="Add User"> Add User </a>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>UserID</th>
+                    <th>UserName</th>
+                    <th>Email</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>{{ user.username}}</td>
+                    <td>{{ user.email}}</td>
+                    {% if user.is_admin() %}
+                        <td>Admin</td>
+                    {% else %}
+                        <td>User</td>
+                    {% endif %}
+                    {% if user.status %}
+                        <td>Normal</td>
+                    {% else %}
+                        <td>Eliminated</td>
+                    {% endif %}
+                    <td>
+                        {% if not user.is_admin() %}
+                            <a href="{{ url_for('admin.user_edit', user_id=user.id) }}">Edit</a> |
+                            <a href="javascript:delete_user_{{ user.id }}()">Delete</a>
+                        {% else %}
+                        <b>You can't edit an Admin!</b>
+                        {% endif %}
+                        <form method="post" role="form" id="delete_user_{{ user.id }}">
+                            {{ deleteUserForm.hidden_tag() }}
+                            {{ deleteUserForm.user_id(hidden="",class="hidden", value=user.id) }}
+                        </form>
+                        <script type="text/javascript">
+                           function delete_user_{{ user.id }}(){
+                               if(confirm('Confirm To Delete?')){
+                                $("#delete_user_{{ user.id }}").submit() ;
+                               }
+                           }
+                        </script>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade bs-example-modal-sm" id="user-add" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="add-user">
+                <form method="post" role="form">
+                    {{ addUserForm.hidden_tag() }}                    
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i> </span>
+                        {{ addUserForm.username(class="form-control", placeholder="UserID",required="", autofocus="") }}
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i> </span>
+                        {{ addUserForm.email(class="form-control", placeholder="E-mail", required="") }}
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-briefcase"></i> </span>
+                        {{ addUserForm.role(class="form-control", required="") }}
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-tree-deciduous"></i> </span>
+                        {{ addUserForm.status(class="form-control", required="") }}
+                    </div>
+                    <div class="modal-footer">
+                        <input class="btn btn-default" type="reset" value="Default">
+                        {{ addUserForm.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
